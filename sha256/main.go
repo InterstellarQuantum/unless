@@ -37,14 +37,12 @@ func main() {
 	wg.Add(len(infos))
 	for _, v := range infos {
 		go func(v fs.FileInfo) {
-			if !(v.IsDir()) {
-				pathname := path + v.Name()
-				sha, e := GetSHA256FromFile(pathname)
-				if e == nil {
-					fmt.Printf("fileName: %s,sha256: %s \n", v.Name(), sha)
-				} else {
-					fmt.Println(e)
-				}
+			pathname := path + v.Name()
+			sha, e := GetSHA256FromFile(pathname)
+			if e == nil {
+				fmt.Printf("fileName: %s,sha256: %s \n", v.Name(), sha)
+			} else {
+				fmt.Println(e)
 			}
 			wg.Done()
 		}(v)
