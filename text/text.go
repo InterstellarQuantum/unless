@@ -6,7 +6,9 @@ import (
 
 //操作文本,主要目的是写入,把内容换行追加在文本里面
 
-func Preserve(path string) (func(text string) error, error) {
+type Mt func(text string) error
+
+func Preserve(path string) (Mt, error) {
 	_, err := os.Stat(path)
 	if err != nil {
 		_, err := os.Create(path)
