@@ -1,4 +1,4 @@
-package main
+package uses
 
 import (
 	"crypto/sha256"
@@ -12,8 +12,7 @@ import (
 	"sync"
 )
 
-func main() {
-	args := os.Args
+func UseSha256(args []string) {
 	if len(args) != 2 {
 		fmt.Println("input directory,like ./app /usr/local/bin")
 		return
