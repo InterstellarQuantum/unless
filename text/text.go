@@ -18,6 +18,7 @@ func Preserve(path string) (Mt, error) {
 	}
 	return func(text string) error {
 		openFile, e := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0666)
+		defer openFile.Close()
 		if e != nil {
 			return e
 		}
