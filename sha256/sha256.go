@@ -12,16 +12,12 @@ import (
 	"sync"
 )
 
-func UseSha256(args []string) {
-	if len(args) != 2 {
-		fmt.Println("input directory,like ./app /usr/local/bin")
-		return
-	}
-	path := args[1]
+//返回文件名和sha256
+func UseSha256(path string) (map[string]string, error) {
+	var result = make(map[string]string, 0)
 	infos, e := ioutil.ReadDir(path)
 	if e != nil {
-		fmt.Println(e)
-		return
+		return result, e
 	}
 	if !strings.HasSuffix(path, `/`) || !strings.HasSuffix(path, `\\`) {
 		sysType := runtime.GOOS
@@ -40,15 +36,17 @@ func UseSha256(args []string) {
 				pathname := path + v.Name()
 				sha, e := GetSHA256FromFile(pathname)
 				if e == nil {
-					fmt.Printf("fileName: %s,sha256: %s \n", v.Name(), sha)
+					//fmt.Printf("fileName: %s,sha256: %s \n", v.Name(), sha)
+					result[v.Name()] = sha
 				} else {
-					fmt.Println(e)
+					result[v.Name()] = e.Error()
 				}
 			}
 			wg.Done()
 		}(v)
 	}
 	wg.Wait()
+	return result, nil
 }
 
 func GetSHA256FromFile(path string) (string, error) {
