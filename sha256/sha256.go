@@ -7,8 +7,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
-	"runtime"
-	"strings"
+	"path/filepath"
 	"sync"
 )
 
@@ -19,27 +18,17 @@ func UseSha256(path string) (map[string]string, error) {
 	if e != nil {
 		return result, e
 	}
-	if !strings.HasSuffix(path, `/`) || !strings.HasSuffix(path, `\\`) {
-		sysType := runtime.GOOS
-		if sysType == `linux` {
-			path = path + `/`
-		}
-		if sysType == `windows` {
-			path = path + `\\`
-		}
-	}
 	wg := sync.WaitGroup{}
 	wg.Add(len(infos))
 	for _, v := range infos {
 		go func(v fs.FileInfo) {
 			if !(v.IsDir()) {
-				pathname := path + v.Name()
+				pathname := filepath.Join(path, v.Name())
 				sha, e := GetSHA256FromFile(pathname)
-				if e == nil {
-					//fmt.Printf("fileName: %s,sha256: %s \n", v.Name(), sha)
-					result[v.Name()] = sha
-				} else {
+				if e != nil {
 					result[v.Name()] = e.Error()
+				} else {
+					result[v.Name()] = sha
 				}
 			}
 			wg.Done()
